@@ -1,24 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import Home from './pages/Home';
+import Recipe from './pages/Recipe';
+import RecipesList from './pages/RecipesList';
+import Profile from './pages/Profile';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import RecipeForm from './components/RecipeForm';
 
 function App() {
+  const [user, setUser] = useState(null);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div>
+        <Header user={user} />
+        <main>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/recipes" element={<RecipesList />} />
+            <Route path="/recipe/:id" element={<Recipe />} />
+            <Route path="/profile" element={<Profile user={user} />} />
+            <Route path="/login" element={<Login setUser={setUser} />} />
+            <Route path="/register" element={<Register setUser={setUser} />} />
+            <Route path="/recipeform" element={<RecipeForm />} />
+          </Routes>
+        </main>
+        <Footer />
+      </div>
+    </Router>
   );
 }
 
