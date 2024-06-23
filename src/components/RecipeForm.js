@@ -9,7 +9,7 @@ const RecipeForm = () => {
     photo: null,
   });
 
-  const [submitted, setSubmitted] = useState(false); 
+  const [submitted, setSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -41,8 +41,8 @@ const RecipeForm = () => {
       return;
     }
 
-    setLoading(true); 
-    setErrorMessage(''); 
+    setLoading(true);
+    setErrorMessage('');
 
     const formData = new FormData();
     formData.append('name', recipeData.name);
@@ -51,9 +51,11 @@ const RecipeForm = () => {
     formData.append('photo', recipeData.photo);
 
     try {
-      const response = await axios.post('/api/recipes', formData, {
+      const token = localStorage.getItem('token'); 
+      const response = await axios.post('http://localhost:5000/api/recipes', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`, 
         },
       });
       console.log('Recipe submitted:', response.data);
@@ -67,7 +69,7 @@ const RecipeForm = () => {
         setErrorMessage('Failed to submit recipe. Please try again.');
       }
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
@@ -152,7 +154,7 @@ const RecipeForm = () => {
         <button
           type="submit"
           className="mt-4 w-full px-4 py-2 bg-orange-500 text-white rounded-md focus:outline-none"
-          disabled={loading} 
+          disabled={loading}
         >
           {loading ? 'Submitting...' : 'Submit Recipe'}
         </button>

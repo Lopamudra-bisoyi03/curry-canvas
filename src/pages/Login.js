@@ -1,19 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Login = ({ setUser }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/validate-token', {
+          credentials: 'include', // Include credentials in the request
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data.user);
+          navigate('/profile');
+        }
+      } catch (error) {
+        console.error('Auto-login error:', error);
+      }
+    };
+
+    checkLoginStatus();
+  }, [navigate, setUser]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError(null);
+
     try {
       const response = await fetch('http://localhost:5000/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include', 
         body: JSON.stringify({ email, password }),
       });
 
@@ -25,7 +50,10 @@ const Login = ({ setUser }) => {
       setUser(data.user);
       navigate('/profile');
     } catch (error) {
-      console.error('Login error:', error.message); 
+      console.error('Login error:', error.message);
+      setError(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -53,8 +81,9 @@ const Login = ({ setUser }) => {
             required
           />
         </div>
-        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
-          Login
+        {error && <p className="text-red-500 mb-4">{error}</p>}
+        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded" disabled={loading}>
+          {loading ? 'Logging in...' : 'Login'}
         </button>
       </form>
     </div>
